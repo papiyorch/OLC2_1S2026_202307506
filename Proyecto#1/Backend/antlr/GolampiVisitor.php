@@ -571,6 +571,16 @@ interface GolampiVisitor extends ParseTreeVisitor
 	public function visitExprDeref(Context\ExprDerefContext $context);
 
 	/**
+	 * Visit a parse tree produced by the `ExprInlineArray` labeled alternative
+	 * in {@see GolampiParser::expression()}.
+	 *
+	 * @param Context\ExprInlineArrayContext $context The parse tree.
+	 *
+	 * @return mixed The visitor result.
+	 */
+	public function visitExprInlineArray(Context\ExprInlineArrayContext $context);
+
+	/**
 	 * Visit a parse tree produced by the `ExprMulDiv` labeled alternative
 	 * in {@see GolampiParser::expression()}.
 	 *

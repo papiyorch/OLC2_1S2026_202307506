@@ -19,7 +19,7 @@ returnTypes
     ;
 
 structureDecl
-    :   TYPE ID STRUCT LBRACE (ID type SEMI)* RBRACE
+    :   TYPE_KW ID STRUCT LBRACE (ID type SEMI)* RBRACE
     ;
 
 paramList
@@ -129,6 +129,7 @@ expression
     |   MINUS expression                                        # ExprNegate
     |   ID LBRACE valores? RBRACE                               # ExprStructLit
     |   arrayLiteral                                            # ExprArrayLit
+    |   LBRACE (valores COMMA?)? RBRACE                         # ExprInlineArray
     |   '&' ID                                                  # ExprAddr
     |   '*' expression                                          # ExprDeref
     |   expression  DOT ID                                      # ExprStructAccess
@@ -157,6 +158,7 @@ type
     |   STRING
     |   '*' type
     |   LBRACK expression RBRACK type
+    |   LBRACK RBRACK type
     |   ID
     ;
 
@@ -170,7 +172,7 @@ literal
     ;
 
 arrayLiteral
-    :   type LBRACE valores? RBRACE
+    :   type LBRACE (valores COMMA?)? RBRACE
     ;
 
 structAssignment
@@ -196,7 +198,7 @@ NIL     :   'nil';
 PRINT   :   'print';
 PRINTLN :   'println';
 STRUCT  :   'struct';
-TYPE    :   'type';
+TYPE_KW :   'type';
 
 // TIPOS
 // ======================================================================

@@ -22,7 +22,7 @@ namespace {
 		public const FUNC = 1, VAR = 2, CONST = 3, IF = 4, ELSE = 5, SWITCH = 6, 
                CASE = 7, DEFAULT = 8, FOR = 9, BREAK = 10, CONTIN = 11, 
                RETURN = 12, NIL = 13, PRINT = 14, PRINTLN = 15, STRUCT = 16, 
-               TYPE = 17, INT32 = 18, FLOAT32 = 19, BOOL = 20, RUNE = 21, 
+               TYPE_KW = 17, INT32 = 18, FLOAT32 = 19, BOOL = 20, RUNE = 21, 
                STRING = 22, BOOL_LIT = 23, FMT_PRINTLN = 24, LEN = 25, NOW = 26, 
                SUBSTR = 27, TYPEOF = 28, ASSIGN = 29, DECL_ASSIGN = 30, 
                PLUS_ASSIGN = 31, MINUS_ASSIGN = 32, MUL_ASSIGN = 33, DIV_ASSIGN = 34, 
@@ -54,7 +54,7 @@ namespace {
 		 */
 		public const RULE_NAMES = [
 			'FUNC', 'VAR', 'CONST', 'IF', 'ELSE', 'SWITCH', 'CASE', 'DEFAULT', 'FOR', 
-			'BREAK', 'CONTIN', 'RETURN', 'NIL', 'PRINT', 'PRINTLN', 'STRUCT', 'TYPE', 
+			'BREAK', 'CONTIN', 'RETURN', 'NIL', 'PRINT', 'PRINTLN', 'STRUCT', 'TYPE_KW', 
 			'INT32', 'FLOAT32', 'BOOL', 'RUNE', 'STRING', 'BOOL_LIT', 'FMT_PRINTLN', 
 			'LEN', 'NOW', 'SUBSTR', 'TYPEOF', 'ASSIGN', 'DECL_ASSIGN', 'PLUS_ASSIGN', 
 			'MINUS_ASSIGN', 'MUL_ASSIGN', 'DIV_ASSIGN', 'MOD_ASSIGN', 'INC', 'DEC', 
@@ -86,7 +86,7 @@ namespace {
 		private const SYMBOLIC_NAMES = [
 		    null, "FUNC", "VAR", "CONST", "IF", "ELSE", "SWITCH", "CASE", "DEFAULT", 
 		    "FOR", "BREAK", "CONTIN", "RETURN", "NIL", "PRINT", "PRINTLN", "STRUCT", 
-		    "TYPE", "INT32", "FLOAT32", "BOOL", "RUNE", "STRING", "BOOL_LIT", 
+		    "TYPE_KW", "INT32", "FLOAT32", "BOOL", "RUNE", "STRING", "BOOL_LIT", 
 		    "FMT_PRINTLN", "LEN", "NOW", "SUBSTR", "TYPEOF", "ASSIGN", "DECL_ASSIGN", 
 		    "PLUS_ASSIGN", "MINUS_ASSIGN", "MUL_ASSIGN", "DIV_ASSIGN", "MOD_ASSIGN", 
 		    "INC", "DEC", "PLUS", "MINUS", "MUL", "DIV", "MOD", "EQ", "NEQ", "LT", 
