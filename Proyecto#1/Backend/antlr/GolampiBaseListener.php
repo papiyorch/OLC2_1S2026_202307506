@@ -775,6 +775,19 @@ class GolampiBaseListener implements GolampiListener
 	 *
 	 * The default implementation does nothing.
 	 */
+	public function enterExprInlineArray(Context\ExprInlineArrayContext $context): void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitExprInlineArray(Context\ExprInlineArrayContext $context): void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
 	public function enterExprMulDiv(Context\ExprMulDivContext $context): void {}
 
 	/**

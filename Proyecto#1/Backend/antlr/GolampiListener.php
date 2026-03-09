@@ -666,6 +666,18 @@ interface GolampiListener extends ParseTreeListener {
 	 */
 	public function exitExprDeref(Context\ExprDerefContext $context): void;
 	/**
+	 * Enter a parse tree produced by the `ExprInlineArray`
+	 * labeled alternative in {@see GolampiParser::expression()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterExprInlineArray(Context\ExprInlineArrayContext $context): void;
+	/**
+	 * Exit a parse tree produced by the `ExprInlineArray` labeled alternative
+	 * in {@see GolampiParser::expression()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitExprInlineArray(Context\ExprInlineArrayContext $context): void;
+	/**
 	 * Enter a parse tree produced by the `ExprMulDiv`
 	 * labeled alternative in {@see GolampiParser::expression()}.
 	 * @param $context The parse tree.

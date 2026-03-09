@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Environment (Entorno / Scope)
- * Implementa la tabla de símbolos con soporte de ámbitos anidados.
- */
 class Environment
 {
     /** @var Environment|null */

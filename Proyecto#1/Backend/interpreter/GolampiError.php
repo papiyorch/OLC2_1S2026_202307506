@@ -2,7 +2,7 @@
 
 use Antlr\Antlr4\Runtime\Error\Listeners\BaseErrorListener;
 use Antlr\Antlr4\Runtime\Recognizer;
-use Antlr\Antlr4\Runtime\Exception\RecognitionException;
+use Antlr\Antlr4\Runtime\Error\Exceptions\RecognitionException;
 
 // ──────────────────────────────────────────────
 // Excepción de runtime del intérprete
