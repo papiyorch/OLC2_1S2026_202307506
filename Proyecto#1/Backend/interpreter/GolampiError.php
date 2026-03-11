@@ -57,8 +57,15 @@ class GolampiErrorCollector extends BaseErrorListener
         string     $msg,
         ?RecognitionException $e
     ): void {
-        // Distinguir léxico vs sintáctico por el tipo de recognizer
-        $type = ($recognizer instanceof \GolampiLexer) ? 'Léxico' : 'Sintáctico';
+        // Si el símbolo ofensor es ERR_CHAR (tipo 71), es un error léxico
+        $isErrChar = $offendingSymbol !== null && $offendingSymbol->getType() === 71;
+        $type = ($recognizer instanceof \GolampiLexer || $isErrChar) ? 'Léxico' : 'Sintáctico';
+
+        // Para errores léxicos de ERR_CHAR, simplificar el mensaje
+        if ($isErrChar) {
+            $char = $offendingSymbol->getText();
+            $msg  = "Símbolo no reconocido: '$char'";
+        }
 
         $this->errors[] = [
             'type'    => $type,

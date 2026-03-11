@@ -9,10 +9,10 @@ class GolampiInterpreter extends GolampiBaseVisitor
     private Environment $globalEnv;
     private Environment $currentEnv;
 
-    /** @var array<string, array> Tabla de funciones [nombre => contexto del parser] */
+    // Array de funciones
     private array $functions = [];
 
-    /** @var array Errores semánticos detectados en tiempo de ejecución */
+    // Errores semánticos acumulados durante la interpretación
     private array $semanticErrors = [];
 
     public function __construct()
@@ -22,19 +22,23 @@ class GolampiInterpreter extends GolampiBaseVisitor
         Environment::resetSymbols();
     }
 
-    // ──────────────────────────────────────────────
     // Getters de resultado
     // ──────────────────────────────────────────────
     public function getOutput(): string  { return $this->output; }
     public function getSymbolTable(): array { return Environment::getAllSymbols(); }
     public function getSemanticErrors(): array { return $this->semanticErrors; }
 
-    // ──────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────
     private function addError(string $msg, int $line = 0, int $col = 0): void
     {
-        $this->semanticErrors[] = ['type' => 'Semántico', 'desc' => $msg, 'line' => $line, 'col' => $col];
+        // Evitar duplicados del mismo error en la misma línea/columna
+        foreach ($this->semanticErrors as $existing) {
+            if ($existing['desc'] === $msg && $existing['line'] === $line && $existing['column'] === $col) {
+                return;
+            }
+        }
+        $this->semanticErrors[] = ['type' => 'Semántico', 'desc' => $msg, 'line' => $line, 'column' => $col];
     }
 
     private function defaultValue(string $type): mixed
@@ -49,13 +53,9 @@ class GolampiInterpreter extends GolampiBaseVisitor
         };
     }
 
-    /**
-     * Build a fully initialized default value from a type context node.
-     * Handles: int32, float32, bool, rune, string, [N]type, [N][M]type, etc.
-     */
     private function defaultForTypeCtx($typeCtx): mixed
     {
-        // Array type: LBRACK expression RBRACK type
+        // Tipo de array
         if ($typeCtx->expression()) {
             $size     = (int) $this->visit($typeCtx->expression());
             $innerCtx = $typeCtx->type();
@@ -65,11 +65,9 @@ class GolampiInterpreter extends GolampiBaseVisitor
             }
             return $arr;
         }
-        // Slice type: LBRACK RBRACK type  → empty array
         if ($typeCtx->LBRACK() && !$typeCtx->expression()) {
             return [];
         }
-        // Primitive type
         return $this->defaultValue($typeCtx->getText());
     }
 
@@ -103,16 +101,23 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return (string) $v;
     }
 
-    // ──────────────────────────────────────────────
     // Visita raíz
     // ──────────────────────────────────────────────
     public function visitStart($ctx): mixed
     {
-        // Hoisting: registrar todas las funciones primero (sin pasar por visit)
+        // Hoisting
         foreach ($ctx->topDecl() as $decl) {
             if ($decl instanceof Context\DeclFunctionContext) {
-                $name = $decl->functionDecl()->ID()->getText();
-                $this->functions[$name] = $decl->functionDecl();
+                $funcDecl = $decl->functionDecl();
+                $name     = $funcDecl->ID()->getText();
+                $line     = $funcDecl->ID()->getSymbol()->getLine();
+                $col      = $funcDecl->ID()->getSymbol()->getCharPositionInLine();
+                $this->functions[$name] = $funcDecl;
+                try {
+                    $this->globalEnv->declare($name, 'función', null, $line, $col);
+                } catch (GolampiRuntimeError $e) {
+                    $this->addError($e->getMessage(), $line, $col);
+                }
             }
         }
 
@@ -129,17 +134,11 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Declaraciones de nivel superior
     // ──────────────────────────────────────────────
     public function visitDeclFunction($ctx): mixed
     {
-        // El registro real se hace en visitStart (hoisting).
-        // Esta visita no necesita hacer nada adicional.
-        $name = $ctx->functionDecl()->ID()->getText();
-        if (!isset($this->functions[$name])) {
-            $this->functions[$name] = $ctx->functionDecl();
-        }
+        // Ya registrado durante el hoisting en visitStart
         return null;
     }
 
@@ -153,13 +152,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return $this->visitConstantDecl($ctx->constantDecl());
     }
 
-    public function visitDeclStruct($ctx): mixed
-    {
-        // Structs: se registran como tipo (implementación básica)
-        return null;
-    }
-
-    // ──────────────────────────────────────────────
     // Llamada a función
     // ──────────────────────────────────────────────
     private function callFunction(string $name, array $args): mixed
@@ -195,7 +187,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return $returnValue;
     }
 
-    // ──────────────────────────────────────────────
     // Block
     // ──────────────────────────────────────────────
     public function visitBlock($ctx): mixed
@@ -206,7 +197,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Statements
     // ──────────────────────────────────────────────
     public function visitStmtVar($ctx): mixed
@@ -288,11 +278,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return $this->visit($ctx->expression());
     }
 
-    public function visitStmtStructAssign($ctx): mixed
-    {
-        return $this->visitStructAssignment($ctx->structAssignment());
-    }
-
     public function visitStmtEmpty($ctx): mixed
     {
         return null;
@@ -305,7 +290,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $val = $this->visit($ctx->expression());
         try {
             $ptrVal = $this->currentEnv->get($id);
-            // ptrVal es un array ['ref' => &env, 'id' => name]
             if (is_array($ptrVal) && isset($ptrVal['__ptr'])) {
                 $ptrVal['env']->assign($ptrVal['id'], $val);
             } else {
@@ -318,7 +302,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // varDecl / constDecl / shortDecl
     // ──────────────────────────────────────────────
     public function visitVarDecl($ctx): mixed
@@ -365,6 +348,25 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $ids    = $ctx->ID();
         $values = $this->resolveMultiValues($ctx->valores(), count($ids));
 
+        // En Go/Golampi, := requiere que al menos una variable sea nueva en el scope actual
+        $allExist = true;
+        foreach ($ids as $idNode) {
+            if (!$this->currentEnv->existsLocal($idNode->getText())) {
+                $allExist = false;
+                break;
+            }
+        }
+        if ($allExist) {
+            $first = $ids[0];
+            $names = implode(', ', array_map(fn($id) => "'" . $id->getText() . "'", $ids));
+            $this->addError(
+                "Declaración corta ':=' inválida: $names ya están declarados en el ámbito actual.",
+                $first->getSymbol()->getLine(),
+                $first->getSymbol()->getCharPositionInLine()
+            );
+            return null;
+        }
+
         foreach ($ids as $i => $idNode) {
             $name = $idNode->getText();
             $val  = $values[$i] ?? null;
@@ -388,7 +390,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Assignment
     // ──────────────────────────────────────────────
     public function visitAssignSimple($ctx): mixed
@@ -437,7 +438,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Increment / Decrement
     // ──────────────────────────────────────────────
     public function visitIncDec($ctx): mixed
@@ -453,7 +453,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Print
     // ──────────────────────────────────────────────
     public function visitPrintStmt($ctx): mixed
@@ -472,7 +471,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // If
     // ──────────────────────────────────────────────
     public function visitIfStmt($ctx): mixed
@@ -483,14 +481,14 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $this->currentEnv = $this->currentEnv->createChild('if');
 
         if ($cond) {
-            // block(0) = bloque then
+            // bloque then
             $this->visitBlock($ctx->block(0));
         } else {
             $elseIf = $ctx->ifStmt();  // else if anidado
             if ($elseIf !== null) {
                 $this->visitIfStmt($elseIf);
             } else {
-                // block(1) = bloque else (si existe)
+                // bloque else (si existe)
                 $elseBlock = $ctx->block(1);
                 if ($elseBlock !== null) {
                     $this->visitBlock($elseBlock);
@@ -502,7 +500,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Switch
     // ──────────────────────────────────────────────
     public function visitSwitchStmt($ctx): mixed
@@ -538,7 +535,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // For
     // ──────────────────────────────────────────────
     public function visitForStmt($ctx): mixed
@@ -585,7 +581,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Return
     // ──────────────────────────────────────────────
     public function visitReturnStmt($ctx): mixed
@@ -595,8 +590,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
         throw new ReturnSignal($retVal);
     }
 
-    // ──────────────────────────────────────────────
-    // Array assignment:  id[i][j]... = expr
+    // Array assignment
     // ──────────────────────────────────────────────
     public function visitArrayAssignment($ctx): mixed
     {
@@ -618,29 +612,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return null;
     }
 
-    // ──────────────────────────────────────────────
-    // Struct assignment:  expr.id = expr
-    // ──────────────────────────────────────────────
-    public function visitStructAssignment($ctx): mixed
-    {
-        // Implementación básica: solo soporta id.field = expr
-        $exprs = $ctx->expression();
-        $field = $ctx->ID()->getText();
-        $obj   = $this->visit($exprs[0]);
-        $val   = $this->visit($exprs[1]);
-
-        if (is_array($obj)) {
-            $obj[$field] = $val;
-            // Intentar asignar de vuelta si el objeto era un id
-            if ($ctx->expression(0) instanceof \Context\ExprIdContext) {
-                $idName = $ctx->expression(0)->ID()->getText();
-                try { $this->currentEnv->assign($idName, $obj); } catch (\Throwable) {}
-            }
-        }
-        return null;
-    }
-
-    // ──────────────────────────────────────────────
     // Valores (lista de expresiones)
     // ──────────────────────────────────────────────
     public function visitValores($ctx): array
@@ -649,11 +620,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return array_map(fn($e) => $this->visit($e), $ctx->expression());
     }
 
-    /**
-     * Resuelve los valores del lado derecho teniendo en cuenta retornos
-     * múltiples: si hay N ids pero 1 sola expresión que retorna un array,
-     * se expande ese array para asignarlo elemento a elemento.
-     */
+
     private function resolveMultiValues($valoresCtx, int $idCount): array
     {
         if ($valoresCtx === null) return array_fill(0, $idCount, null);
@@ -672,7 +639,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return [$result];
     }
 
-    // ──────────────────────────────────────────────
     // Expresiones
     // ──────────────────────────────────────────────
     public function visitExprParenthesis($ctx): mixed
@@ -718,11 +684,31 @@ class GolampiInterpreter extends GolampiBaseVisitor
 
         if ($l === null || $r === null) return null;
 
-        return match($op) {
-            '+' => is_string($l) && is_string($r) ? $l . $r : $l + $r,
-            '-' => $l - $r,
-            default => null,
-        };
+        $li = is_int($l);   $lf = is_float($l);
+        $ri = is_int($r);   $rf = is_float($r);
+        $ls = is_string($l); $rs = is_string($r);
+        $lb = is_bool($l);  $rb = is_bool($r);
+
+        if ($op === '+') {
+            // string + string = string (concatenación)
+            if ($ls && $rs) return $l . $r;
+            // bool en cualquier operando → nil
+            if ($lb || $rb || $ls || $rs) return null;
+            // int/rune + float o float + int/rune → float
+            if (($li && $rf) || ($lf && $ri)) return (float)($l + $r);
+            // float + float → float
+            if ($lf && $rf) return (float)($l + $r);
+            // int + int (cubre int32 y rune) → int
+            if ($li && $ri) return (int)($l + $r);
+            return null;
+        }
+
+        // Resta: mismas reglas que suma pero sin string
+        if ($lb || $rb || $ls || $rs) return null;
+        if (($li && $rf) || ($lf && $ri)) return (float)($l - $r);
+        if ($lf && $rf) return (float)($l - $r);
+        if ($li && $ri) return (int)($l - $r);
+        return null;
     }
 
     public function visitExprMulDiv($ctx): mixed
@@ -733,13 +719,40 @@ class GolampiInterpreter extends GolampiBaseVisitor
 
         if ($l === null || $r === null) return null;
 
-        return match($op) {
-            '*'   => is_string($l) && is_int($r) ? str_repeat($l, $r)
-                   : (is_int($r) && is_string($r) ? str_repeat($r, $l) : $l * $r),
-            '/'   => $r != 0 ? (is_int($l) && is_int($r) ? intdiv($l, $r) : $l / $r) : null,
-            '%'   => $r != 0 ? $l % $r : null,
-            default => null,
-        };
+        $li = is_int($l);   $lf = is_float($l);
+        $ri = is_int($r);   $rf = is_float($r);
+        $ls = is_string($l); $rs = is_string($r);
+        $lb = is_bool($l);  $rb = is_bool($r);
+
+        if ($op === '*') {
+            // string * int32 = string (repetición)
+            if ($ls && $ri) return str_repeat($l, max(0, $r));
+            if ($li && $rs) return str_repeat($r, max(0, $l));
+            // bool o string inválidos en otros casos
+            if ($lb || $rb || $ls || $rs) return null;
+            if (($li && $rf) || ($lf && $ri)) return (float)($l * $r);
+            if ($lf && $rf) return (float)($l * $r);
+            if ($li && $ri) return (int)($l * $r);
+            return null;
+        }
+
+        if ($op === '/') {
+            if ($lb || $rb || $ls || $rs) return null;
+            if ($r == 0) return null;
+            if (($li && $rf) || ($lf && $ri)) return (float)($l / $r);
+            if ($lf && $rf) return (float)($l / $r);
+            if ($li && $ri) return intdiv((int)$l, (int)$r);
+            return null;
+        }
+
+        if ($op === '%') {
+            // Solo int32/rune con int32/rune
+            if (!$li || !$ri) return null;
+            if ($r == 0) return null;
+            return (int)($l % $r);
+        }
+
+        return null;
     }
 
     public function visitExprRelational($ctx): mixed
@@ -747,6 +760,11 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $l  = $this->visit($ctx->expression(0));
         $r  = $this->visit($ctx->expression(1));
         $op = $ctx->getChild(1)->getText();
+
+        // bool no soporta comparaciones de orden
+        if (is_bool($l) || is_bool($r)) return null;
+        // string solo con string
+        if (is_string($l) !== is_string($r)) return null;
 
         return match($op) {
             '<'  => $l < $r,
@@ -762,6 +780,12 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $l  = $this->visit($ctx->expression(0));
         $r  = $this->visit($ctx->expression(1));
         $op = $ctx->getChild(1)->getText();
+
+        // bool solo con bool; string solo con string; números entre sí
+        $lb = is_bool($l); $rb = is_bool($r);
+        $ls = is_string($l); $rs = is_string($r);
+        if ($lb !== $rb) return null;
+        if ($ls !== $rs) return null;
 
         return $op === '==' ? $l === $r : $l !== $r;
     }
@@ -807,17 +831,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return $arr[$idx] ?? null;
     }
 
-    public function visitExprStructAccess($ctx): mixed
-    {
-        $obj   = $this->visit($ctx->expression());
-        $field = $ctx->ID()->getText();
-
-        if (is_array($obj)) {
-            return $obj[$field] ?? null;
-        }
-        return null;
-    }
-
     public function visitExprArrayLit($ctx): mixed
     {
         return $this->visitArrayLiteral($ctx->arrayLiteral());
@@ -825,16 +838,8 @@ class GolampiInterpreter extends GolampiBaseVisitor
 
     public function visitExprInlineArray($ctx): mixed
     {
-        // {val, val, ...} — fila interna en matrices multidimensionales
+        //fila interna en matrices multidimensionales
         return $ctx->valores() ? $this->visitValores($ctx->valores()) : [];
-    }
-
-    public function visitExprStructLit($ctx): mixed
-    {
-        // id{val, val, ...}  — struct literal básico
-        $values = $ctx->valores() ? $this->visitValores($ctx->valores()) : [];
-        // Retornar como array asociativo (los campos del struct no se validan aquí)
-        return $values;
     }
 
     public function visitExprAddr($ctx): mixed
@@ -852,7 +857,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         return $val;
     }
 
-    // ──────────────────────────────────────────────
     // Built-in functions
     // ──────────────────────────────────────────────
     public function visitExprBuiltIn($ctx): mixed
@@ -871,7 +875,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         };
     }
 
-    // ──────────────────────────────────────────────
     // Literales
     // ──────────────────────────────────────────────
     public function visitLiteral($ctx): mixed
@@ -888,14 +891,14 @@ class GolampiInterpreter extends GolampiBaseVisitor
             return stripcslashes($inner);
         }
         if ($ctx->RUNE_LITERAL()) {
-            // Quitar comillas simples
+            // Rune es alias de int32: almacenar como código Unicode (int)
             $inner = substr($text, 1, -1);
-            return stripcslashes($inner);
+            $char  = stripcslashes($inner);
+            return mb_ord($char, 'UTF-8');
         }
         return null;
     }
 
-    // ──────────────────────────────────────────────
     // Array literal
     // ──────────────────────────────────────────────
     public function visitArrayLiteral($ctx): mixed

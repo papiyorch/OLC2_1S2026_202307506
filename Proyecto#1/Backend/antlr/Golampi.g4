@@ -6,7 +6,6 @@ topDecl
     :   functionDecl    # DeclFunction
     |   varDecl         # DeclGlobalVar
     |   constantDecl    # DeclGlobalConst
-    |   structureDecl   # DeclStruct
     ;
 
 functionDecl
@@ -16,10 +15,6 @@ functionDecl
 returnTypes
     :   type 
     |   LPAREN type (COMMA type) * RPAREN
-    ;
-
-structureDecl
-    :   TYPE_KW ID STRUCT LBRACE (ID type SEMI)* RBRACE
     ;
 
 paramList
@@ -50,7 +45,6 @@ statement
     |   returnStmt ';'?                 # StmtReturn
     |   arrayAssignment ';'?            # StmtArrayAssign
     |   expression ';'?                 # StmtExpr
-    |   structAssignment ';'?           # StmtStructAssign
     |   ';'                             # StmtEmpty
     |   '*' + ID '=' expression ';'     # StmtPtrAssign
     ;
@@ -127,12 +121,10 @@ expression
     :   LPAREN expression RPAREN                                # ExprParenthesis
     |   NOT expression                                          # ExprNot
     |   MINUS expression                                        # ExprNegate
-    |   ID LBRACE valores? RBRACE                               # ExprStructLit
     |   arrayLiteral                                            # ExprArrayLit
     |   LBRACE (valores COMMA?)? RBRACE                         # ExprInlineArray
     |   '&' ID                                                  # ExprAddr
     |   '*' expression                                          # ExprDeref
-    |   expression  DOT ID                                      # ExprStructAccess
     |   expression LBRACK expression RBRACK                     # ExprArrayAccess
     |   expression LPAREN valores? RPAREN                       # ExprCall
     |   expression (MUL | DIV | MOD) expression                 # ExprMulDiv
@@ -175,10 +167,6 @@ arrayLiteral
     :   type LBRACE (valores COMMA?)? RBRACE
     ;
 
-structAssignment
-    :   expression DOT ID ASSIGN expression
-    ;
-
 // PALABRAS RESERVADAS
 // ======================================================================
 
@@ -197,8 +185,6 @@ RETURN  :   'return';
 NIL     :   'nil';
 PRINT   :   'print';
 PRINTLN :   'println';
-STRUCT  :   'struct';
-TYPE_KW :   'type';
 
 // TIPOS
 // ======================================================================
