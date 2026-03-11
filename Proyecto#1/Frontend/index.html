@@ -4,174 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Golampi Interpreter</title>
-  <style>
-    /* ── Reset & base ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #1e1e2e;
-      --surface:   #2a2a3d;
-      --border:    #3a3a55;
-      --accent:    #7c6af7;
-      --accent2:   #56c8a0;
-      --danger:    #f38ba8;
-      --text:      #cdd6f4;
-      --muted:     #6c7086;
-      --font-mono: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* ── Header ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0.6rem 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-shrink: 0;
-    }
-
-    header h1 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 1px;
-      margin-right: auto;
-    }
-
-    /* ── Toolbar buttons ── */
-    .btn {
-      padding: 0.35rem 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--bg);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 0.82rem;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .btn:hover              { background: var(--border); }
-    .btn.primary            { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .btn.primary:hover      { filter: brightness(1.15); }
-    .btn.danger             { border-color: var(--danger); color: var(--danger); }
-    .btn.danger:hover       { background: var(--danger); color: #fff; }
-    .btn.success            { border-color: var(--accent2); color: var(--accent2); }
-    .btn.success:hover      { background: var(--accent2); color: #1e1e2e; }
-
-    /* ── Main layout ── */
-    .workspace {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr auto;
-      gap: 0;
-      overflow: hidden;
-    }
-
-    /* ── Panels ── */
-    .panel {
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .panel-title {
-      background: var(--surface);
-      padding: 0.4rem 0.8rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    /* ── Editor ── */
-    #editor {
-      flex: 1;
-      background: #12121e;
-      color: #e0def4;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      padding: 0.8rem 1rem;
-      border: none;
-      resize: none;
-      outline: none;
-      tab-size: 4;
-    }
-
-    /* ── Console ── */
-    #console-output {
-      flex: 1;
-      background: #0d0d1a;
-      color: #a6e3a1;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      padding: 0.8rem 1rem;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    /* ── Reports bar ── */
-    .reports-bar {
-      grid-column: 1 / -1;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 0.5rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-shrink: 0;
-    }
-
-    .reports-bar span {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-right: 0.4rem;
-    }
-
-    /* ── Error badge ── */
-    #error-badge {
-      font-size: 0.75rem;
-      background: var(--danger);
-      color: #fff;
-      border-radius: 10px;
-      padding: 0.1rem 0.5rem;
-      display: none;
-    }
-
-    /* ── Loading spinner ── */
-    #spinner {
-      display: none;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -179,7 +12,7 @@
 <!-- Header / Toolbar                           -->
 <!-- ══════════════════════════════════════════ -->
 <header>
-  <h1>⚡ GOLAMPI</h1>
+  <h1>⚡ MAZADEIDAD LOVER</h1>
 
   <button class="btn"         onclick="newFile()">Nuevo</button>
   <button class="btn"         onclick="loadFile()">Cargar archivo</button>
@@ -205,18 +38,52 @@ func main() {
 }"></textarea>
   </div>
 
-  <!-- Console -->
+  <!-- Console / Tabs -->
   <div class="panel">
-    <div class="panel-title">Consola de salida</div>
-    <div id="console-output"></div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-console" onclick="switchTab('console')">Consola</button>
+      <button class="tab-btn"        id="tab-errors"  onclick="switchTab('errors')">Errores</button>
+      <button class="tab-btn"        id="tab-symbols" onclick="switchTab('symbols')">Tabla de símbolos</button>
+    </div>
+
+    <!-- Pestaña: Consola -->
+    <div class="tab-content active" id="content-console">
+      <div id="console-output"></div>
+    </div>
+
+    <!-- Pestaña: Errores -->
+    <div class="tab-content" id="content-errors">
+      <div class="report-table-wrap">
+        <div id="errors-empty" class="empty-msg">Sin errores detectados.</div>
+        <table class="report" id="errors-table" style="display:none">
+          <thead>
+            <tr><th>#</th><th>Tipo</th><th>Descripción</th><th>Línea</th><th>Columna</th></tr>
+          </thead>
+          <tbody id="errors-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pestaña: Tabla de símbolos -->
+    <div class="tab-content" id="content-symbols">
+      <div class="report-table-wrap">
+        <div id="symbols-empty" class="empty-msg">Tabla de símbolos vacía.</div>
+        <table class="report" id="symbols-table" style="display:none">
+          <thead>
+            <tr><th>Identificador</th><th>Tipo</th><th>Ámbito</th><th>Valor</th><th>Línea</th><th>Col</th></tr>
+          </thead>
+          <tbody id="symbols-body"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- Reports bar -->
   <div class="reports-bar">
-    <span>Reportes:</span>
-    <button class="btn" id="btn-dl-output"  onclick="downloadOutput()"  disabled>⬇ Resultado</button>
-    <button class="btn" id="btn-dl-errors"  onclick="downloadErrors()"  disabled>⬇ Errores</button>
-    <button class="btn" id="btn-dl-symbols" onclick="downloadSymbols()" disabled>⬇ Tabla de símbolos</button>
+    <span>Descargar:</span>
+    <button class="btn" id="btn-dl-output"  onclick="downloadOutput()"  disabled>⬇ Resultado (.txt)</button>
+    <button class="btn" id="btn-dl-errors"  onclick="downloadErrors()"  disabled>⬇ Errores (.csv)</button>
+    <button class="btn" id="btn-dl-symbols" onclick="downloadSymbols()" disabled>⬇ Tabla de símbolos (.csv)</button>
   </div>
 
 </div>
@@ -224,176 +91,6 @@ func main() {
 <!-- Input file oculto -->
 <input type="file" id="file-input" accept=".go,.golampi,.txt" style="display:none" onchange="onFileLoaded(event)" />
 
-<script>
-// ──────────────────────────────────────────────
-// Estado global
-// ──────────────────────────────────────────────
-const BACKEND_URL = 'http://localhost:8080/index.php';
-
-let lastOutput  = '';
-let lastErrors  = [];
-let lastSymbols = [];
-
-// ──────────────────────────────────────────────
-// Toolbar actions
-// ──────────────────────────────────────────────
-function newFile() {
-  if (document.getElementById('editor').value.trim() &&
-      !confirm('¿Descartar el código actual?')) return;
-  document.getElementById('editor').value = '';
-  clearConsole();
-}
-
-function loadFile() {
-  document.getElementById('file-input').click();
-}
-
-function onFileLoaded(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => { document.getElementById('editor').value = e.target.result; };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function saveFile() {
-  const code = document.getElementById('editor').value;
-  download('programa.golampi', code);
-}
-
-function clearConsole() {
-  document.getElementById('console-output').textContent = '';
-  lastOutput  = '';
-  lastErrors  = [];
-  lastSymbols = [];
-  setReportButtons(false);
-  document.getElementById('error-badge').style.display = 'none';
-}
-
-// ──────────────────────────────────────────────
-// Ejecutar código
-// ──────────────────────────────────────────────
-async function runCode() {
-  const code = document.getElementById('editor').value;
-  if (!code.trim()) return;
-
-  const spinner = document.getElementById('spinner');
-  spinner.style.display = 'block';
-  clearConsole();
-
-  try {
-    const response = await fetch(BACKEND_URL, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ code }),
-    });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-
-    lastOutput  = data.output  ?? '';
-    lastErrors  = data.errors  ?? [];
-    lastSymbols = data.symbols ?? [];
-
-    // Mostrar salida
-    const consoleEl = document.getElementById('console-output');
-
-    if (lastOutput) {
-      consoleEl.textContent = lastOutput;
-    }
-
-    // Mostrar errores en consola si los hay
-    if (lastErrors.length > 0) {
-      consoleEl.textContent += (lastOutput ? '\n' : '') +
-        '─── Errores detectados ───\n' +
-        lastErrors.map(e =>
-          `[Línea ${e.line}:${e.column}] ${e.type}: ${e.desc}`
-        ).join('\n');
-
-      const badge = document.getElementById('error-badge');
-      badge.textContent = `${lastErrors.length} error(es)`;
-      badge.style.display = 'inline-block';
-    }
-
-    setReportButtons(true);
-
-  } catch (err) {
-    document.getElementById('console-output').textContent =
-      `Error de conexión con el backend:\n${err.message}\n\n` +
-      `Verifica que el servidor PHP esté corriendo y la URL es: ${BACKEND_URL}`;
-  } finally {
-    spinner.style.display = 'none';
-  }
-}
-
-// ──────────────────────────────────────────────
-// Reportes / descargas
-// ──────────────────────────────────────────────
-function setReportButtons(enabled) {
-  ['btn-dl-output', 'btn-dl-errors', 'btn-dl-symbols'].forEach(id => {
-    document.getElementById(id).disabled = !enabled;
-  });
-}
-
-function downloadOutput() {
-  download('resultado.txt', lastOutput || '(sin salida)');
-}
-
-function downloadErrors() {
-  if (lastErrors.length === 0) {
-    download('errores.txt', 'Sin errores detectados.');
-    return;
-  }
-  const header = '#  | Tipo       | Descripción                                      | Línea | Columna\n' +
-                 '---|------------|--------------------------------------------------|-------|--------\n';
-  const rows = lastErrors.map((e, i) =>
-    `${String(i+1).padEnd(2)} | ${e.type.padEnd(10)} | ${e.desc.substring(0,48).padEnd(48)} | ${String(e.line).padEnd(5)} | ${e.column}`
-  ).join('\n');
-  download('errores.txt', header + rows);
-}
-
-function downloadSymbols() {
-  if (lastSymbols.length === 0) {
-    download('tabla_simbolos.txt', 'Tabla de símbolos vacía.');
-    return;
-  }
-  const header = 'Identificador       | Tipo       | Ámbito             | Valor               | Línea | Columna\n' +
-                 '--------------------|------------|--------------------|---------------------|-------|--------\n';
-  const rows = lastSymbols.map(s =>
-    `${String(s.id).padEnd(20)}| ${String(s.type).padEnd(10)} | ${String(s.scope).padEnd(18)} | ${String(s.value).substring(0,20).padEnd(21)}| ${String(s.line).padEnd(5)} | ${s.col}`
-  ).join('\n');
-  download('tabla_simbolos.txt', header + rows);
-}
-
-// ──────────────────────────────────────────────
-// Helper de descarga
-// ──────────────────────────────────────────────
-function download(filename, content) {
-  const a = document.createElement('a');
-  a.href     = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-// ──────────────────────────────────────────────
-// Tab en el editor
-// ──────────────────────────────────────────────
-document.getElementById('editor').addEventListener('keydown', e => {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const ta = e.target;
-    const s  = ta.selectionStart;
-    ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(ta.selectionEnd);
-    ta.selectionStart = ta.selectionEnd = s + 4;
-  }
-  // Ctrl+Enter para ejecutar
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-    runCode();
-  }
-});
-</script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,8 +1,4 @@
 <?php
-/**
- * Golampi Interpreter — Backend Entry Point
- * Recibe el código fuente via POST y ejecuta el intérprete.
- */
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -14,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// ──────────────────────────────────────────────
 // Autoload: Composer + clases propias
 // ──────────────────────────────────────────────
 require_once __DIR__ . '/vendor/autoload.php';
@@ -34,7 +29,6 @@ use Antlr\Antlr4\Runtime\CommonTokenStream;
 use Antlr\Antlr4\Runtime\Error\Listeners\DiagnosticErrorListener;
 use Antlr\Antlr4\Runtime\InputStream;
 
-// ──────────────────────────────────────────────
 // Leer input
 // ──────────────────────────────────────────────
 $body = json_decode(file_get_contents('php://input'), true);
@@ -49,7 +43,6 @@ if (trim($sourceCode) === '') {
     exit();
 }
 
-// ──────────────────────────────────────────────
 // Análisis léxico y sintáctico
 // ──────────────────────────────────────────────
 $errorCollector = new GolampiErrorCollector();
@@ -66,28 +59,31 @@ $parser->addErrorListener($errorCollector);
 
 $tree = $parser->start();
 
-// ──────────────────────────────────────────────
-// Interpretación (visita del AST)
+// Interpretación 
 // ──────────────────────────────────────────────
 $output      = '';
 $symbolTable = [];
+$interpreter = null;
 
-if (!$errorCollector->hasFatalError()) {
-    $interpreter = new GolampiInterpreter();
-    try {
-        $interpreter->visit($tree);
-    } catch (GolampiRuntimeError $e) {
-        $errorCollector->addSemanticError($e->getMessage(), $e->getLine(), $e->getColumn());
-    }
-    $output      = $interpreter->getOutput();
-    $symbolTable = $interpreter->getSymbolTable();
+// Siempre intentar interpretar: ANTLR genera árbol parcial incluso con errores sintácticos.
+// Si el árbol está demasiado roto, el try-catch lo captura sin detener la respuesta.
+$interpreter = new GolampiInterpreter();
+try {
+    $interpreter->visit($tree);
+} catch (GolampiRuntimeError $e) {
+    $errorCollector->addSemanticError($e->getMessage(), $e->getErrorLine(), $e->getColumn());
+} catch (\Throwable $e) {
+    // Árbol demasiado incompleto para interpretar — ignorar silenciosamente
 }
+$output      = $interpreter->getOutput();
+$symbolTable = $interpreter->getSymbolTable();
 
-// ──────────────────────────────────────────────
 // Respuesta JSON
 // ──────────────────────────────────────────────
+$allErrors = array_merge($errorCollector->getErrors(), $interpreter->getSemanticErrors());
+
 echo json_encode([
     'output'  => $output,
-    'errors'  => $errorCollector->getErrors(),
+    'errors'  => $allErrors,
     'symbols' => $symbolTable,
 ]);
