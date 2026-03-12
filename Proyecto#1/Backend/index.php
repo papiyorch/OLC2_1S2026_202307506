@@ -65,15 +65,12 @@ $output      = '';
 $symbolTable = [];
 $interpreter = null;
 
-// Siempre intentar interpretar: ANTLR genera árbol parcial incluso con errores sintácticos.
-// Si el árbol está demasiado roto, el try-catch lo captura sin detener la respuesta.
 $interpreter = new GolampiInterpreter();
 try {
     $interpreter->visit($tree);
 } catch (GolampiRuntimeError $e) {
     $errorCollector->addSemanticError($e->getMessage(), $e->getErrorLine(), $e->getColumn());
 } catch (\Throwable $e) {
-    // Árbol demasiado incompleto para interpretar — ignorar silenciosamente
 }
 $output      = $interpreter->getOutput();
 $symbolTable = $interpreter->getSymbolTable();
