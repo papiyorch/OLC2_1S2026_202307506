@@ -51,16 +51,6 @@ interface GolampiVisitor extends ParseTreeVisitor
 	public function visitDeclGlobalConst(Context\DeclGlobalConstContext $context);
 
 	/**
-	 * Visit a parse tree produced by the `DeclStruct` labeled alternative
-	 * in {@see GolampiParser::topDecl()}.
-	 *
-	 * @param Context\DeclStructContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitDeclStruct(Context\DeclStructContext $context);
-
-	/**
 	 * Visit a parse tree produced by {@see GolampiParser::functionDecl()}.
 	 *
 	 * @param Context\FunctionDeclContext $context The parse tree.
@@ -77,15 +67,6 @@ interface GolampiVisitor extends ParseTreeVisitor
 	 * @return mixed The visitor result.
 	 */
 	public function visitReturnTypes(Context\ReturnTypesContext $context);
-
-	/**
-	 * Visit a parse tree produced by {@see GolampiParser::structureDecl()}.
-	 *
-	 * @param Context\StructureDeclContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitStructureDecl(Context\StructureDeclContext $context);
 
 	/**
 	 * Visit a parse tree produced by {@see GolampiParser::paramList()}.
@@ -263,16 +244,6 @@ interface GolampiVisitor extends ParseTreeVisitor
 	 * @return mixed The visitor result.
 	 */
 	public function visitStmtExpr(Context\StmtExprContext $context);
-
-	/**
-	 * Visit a parse tree produced by the `StmtStructAssign` labeled alternative
-	 * in {@see GolampiParser::statement()}.
-	 *
-	 * @param Context\StmtStructAssignContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitStmtStructAssign(Context\StmtStructAssignContext $context);
 
 	/**
 	 * Visit a parse tree produced by the `StmtEmpty` labeled alternative
@@ -471,16 +442,6 @@ interface GolampiVisitor extends ParseTreeVisitor
 	public function visitExprArrayLit(Context\ExprArrayLitContext $context);
 
 	/**
-	 * Visit a parse tree produced by the `ExprStructLit` labeled alternative
-	 * in {@see GolampiParser::expression()}.
-	 *
-	 * @param Context\ExprStructLitContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitExprStructLit(Context\ExprStructLitContext $context);
-
-	/**
 	 * Visit a parse tree produced by the `ExprBuiltIn` labeled alternative
 	 * in {@see GolampiParser::expression()}.
 	 *
@@ -621,16 +582,6 @@ interface GolampiVisitor extends ParseTreeVisitor
 	public function visitExprLiteral(Context\ExprLiteralContext $context);
 
 	/**
-	 * Visit a parse tree produced by the `ExprStructAccess` labeled alternative
-	 * in {@see GolampiParser::expression()}.
-	 *
-	 * @param Context\ExprStructAccessContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitExprStructAccess(Context\ExprStructAccessContext $context);
-
-	/**
 	 * Visit a parse tree produced by the `ExprEquality` labeled alternative
 	 * in {@see GolampiParser::expression()}.
 	 *
@@ -685,13 +636,4 @@ interface GolampiVisitor extends ParseTreeVisitor
 	 * @return mixed The visitor result.
 	 */
 	public function visitArrayLiteral(Context\ArrayLiteralContext $context);
-
-	/**
-	 * Visit a parse tree produced by {@see GolampiParser::structAssignment()}.
-	 *
-	 * @param Context\StructAssignmentContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitStructAssignment(Context\StructAssignmentContext $context);
 }
