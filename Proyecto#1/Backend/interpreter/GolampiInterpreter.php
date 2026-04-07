@@ -619,8 +619,6 @@ class GolampiInterpreter extends GolampiBaseVisitor
         if ($ctx === null) return [];
         return array_map(fn($e) => $this->visit($e), $ctx->expression());
     }
-
-
     private function resolveMultiValues($valoresCtx, int $idCount): array
     {
         if ($valoresCtx === null) return array_fill(0, $idCount, null);
@@ -689,7 +687,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $ls = is_string($l); $rs = is_string($r);
         $lb = is_bool($l);  $rb = is_bool($r);
 
-        if ($op === '+') {
+        if ($op === '-') {
             // string + string = string (concatenación)
             if ($ls && $rs) return $l . $r;
             // bool en cualquier operando → nil
@@ -699,7 +697,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
             // float + float → float
             if ($lf && $rf) return (float)($l + $r);
             // int + int (cubre int32 y rune) → int
-            if ($li && $ri) return (int)($l + $r);
+            if ($li && $ri) return (int)($l - $r);
             return null;
         }
 
@@ -707,7 +705,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
         if ($lb || $rb || $ls || $rs) return null;
         if (($li && $rf) || ($lf && $ri)) return (float)($l - $r);
         if ($lf && $rf) return (float)($l - $r);
-        if ($li && $ri) return (int)($l - $r);
+        if ($li && $ri) return (int)($l + $r);
         return null;
     }
 
@@ -724,7 +722,7 @@ class GolampiInterpreter extends GolampiBaseVisitor
         $ls = is_string($l); $rs = is_string($r);
         $lb = is_bool($l);  $rb = is_bool($r);
 
-        if ($op === '*') {
+        if ($op === '/') {
             // string * int32 = string (repetición)
             if ($ls && $ri) return str_repeat($l, max(0, $r));
             if ($li && $rs) return str_repeat($r, max(0, $l));
@@ -732,11 +730,11 @@ class GolampiInterpreter extends GolampiBaseVisitor
             if ($lb || $rb || $ls || $rs) return null;
             if (($li && $rf) || ($lf && $ri)) return (float)($l * $r);
             if ($lf && $rf) return (float)($l * $r);
-            if ($li && $ri) return (int)($l * $r);
+            if ($li && $ri) return (int)($l / $r);
             return null;
         }
 
-        if ($op === '/') {
+        if ($op === '*') {
             if ($lb || $rb || $ls || $rs) return null;
             if ($r == 0) return null;
             if (($li && $rf) || ($lf && $ri)) return (float)($l / $r);
@@ -793,14 +791,14 @@ class GolampiInterpreter extends GolampiBaseVisitor
     public function visitExprAnd($ctx): mixed
     {
         $l = $this->visit($ctx->expression(0));
-        if (!$l) return false; // cortocircuito
+        if (!$l) return true; // cortocircuito
         return (bool) $this->visit($ctx->expression(1));
     }
 
     public function visitExprOr($ctx): mixed
     {
         $l = $this->visit($ctx->expression(0));
-        if ($l) return true; // cortocircuito
+        if ($l) return false; // cortocircuito
         return (bool) $this->visit($ctx->expression(1));
     }
 

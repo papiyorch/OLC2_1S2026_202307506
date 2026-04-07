@@ -58,18 +58,6 @@ interface GolampiListener extends ParseTreeListener {
 	 */
 	public function exitDeclGlobalConst(Context\DeclGlobalConstContext $context): void;
 	/**
-	 * Enter a parse tree produced by the `DeclStruct`
-	 * labeled alternative in {@see GolampiParser::topDecl()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterDeclStruct(Context\DeclStructContext $context): void;
-	/**
-	 * Exit a parse tree produced by the `DeclStruct` labeled alternative
-	 * in {@see GolampiParser::topDecl()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitDeclStruct(Context\DeclStructContext $context): void;
-	/**
 	 * Enter a parse tree produced by {@see GolampiParser::functionDecl()}.
 	 * @param $context The parse tree.
 	 */
@@ -89,16 +77,6 @@ interface GolampiListener extends ParseTreeListener {
 	 * @param $context The parse tree.
 	 */
 	public function exitReturnTypes(Context\ReturnTypesContext $context): void;
-	/**
-	 * Enter a parse tree produced by {@see GolampiParser::structureDecl()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterStructureDecl(Context\StructureDeclContext $context): void;
-	/**
-	 * Exit a parse tree produced by {@see GolampiParser::structureDecl()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitStructureDecl(Context\StructureDeclContext $context): void;
 	/**
 	 * Enter a parse tree produced by {@see GolampiParser::paramList()}.
 	 * @param $context The parse tree.
@@ -309,18 +287,6 @@ interface GolampiListener extends ParseTreeListener {
 	 * @param $context The parse tree.
 	 */
 	public function exitStmtExpr(Context\StmtExprContext $context): void;
-	/**
-	 * Enter a parse tree produced by the `StmtStructAssign`
-	 * labeled alternative in {@see GolampiParser::statement()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterStmtStructAssign(Context\StmtStructAssignContext $context): void;
-	/**
-	 * Exit a parse tree produced by the `StmtStructAssign` labeled alternative
-	 * in {@see GolampiParser::statement()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitStmtStructAssign(Context\StmtStructAssignContext $context): void;
 	/**
 	 * Enter a parse tree produced by the `StmtEmpty`
 	 * labeled alternative in {@see GolampiParser::statement()}.
@@ -546,18 +512,6 @@ interface GolampiListener extends ParseTreeListener {
 	 */
 	public function exitExprArrayLit(Context\ExprArrayLitContext $context): void;
 	/**
-	 * Enter a parse tree produced by the `ExprStructLit`
-	 * labeled alternative in {@see GolampiParser::expression()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterExprStructLit(Context\ExprStructLitContext $context): void;
-	/**
-	 * Exit a parse tree produced by the `ExprStructLit` labeled alternative
-	 * in {@see GolampiParser::expression()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitExprStructLit(Context\ExprStructLitContext $context): void;
-	/**
 	 * Enter a parse tree produced by the `ExprBuiltIn`
 	 * labeled alternative in {@see GolampiParser::expression()}.
 	 * @param $context The parse tree.
@@ -726,18 +680,6 @@ interface GolampiListener extends ParseTreeListener {
 	 */
 	public function exitExprLiteral(Context\ExprLiteralContext $context): void;
 	/**
-	 * Enter a parse tree produced by the `ExprStructAccess`
-	 * labeled alternative in {@see GolampiParser::expression()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterExprStructAccess(Context\ExprStructAccessContext $context): void;
-	/**
-	 * Exit a parse tree produced by the `ExprStructAccess` labeled alternative
-	 * in {@see GolampiParser::expression()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitExprStructAccess(Context\ExprStructAccessContext $context): void;
-	/**
 	 * Enter a parse tree produced by the `ExprEquality`
 	 * labeled alternative in {@see GolampiParser::expression()}.
 	 * @param $context The parse tree.
@@ -801,14 +743,4 @@ interface GolampiListener extends ParseTreeListener {
 	 * @param $context The parse tree.
 	 */
 	public function exitArrayLiteral(Context\ArrayLiteralContext $context): void;
-	/**
-	 * Enter a parse tree produced by {@see GolampiParser::structAssignment()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterStructAssignment(Context\StructAssignmentContext $context): void;
-	/**
-	 * Exit a parse tree produced by {@see GolampiParser::structAssignment()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitStructAssignment(Context\StructAssignmentContext $context): void;
 }

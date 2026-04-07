@@ -67,10 +67,11 @@ $interpreter = null;
 
 $interpreter = new GolampiInterpreter();
 try {
-    $interpreter->visit($tree);
+    $interpreter->visitStart($tree);
 } catch (GolampiRuntimeError $e) {
     $errorCollector->addSemanticError($e->getMessage(), $e->getErrorLine(), $e->getColumn());
 } catch (\Throwable $e) {
+    // Silently catch other throwables
 }
 $output      = $interpreter->getOutput();
 $symbolTable = $interpreter->getSymbolTable();

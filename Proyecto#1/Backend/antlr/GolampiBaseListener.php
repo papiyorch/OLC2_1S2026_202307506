@@ -73,19 +73,6 @@ class GolampiBaseListener implements GolampiListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterDeclStruct(Context\DeclStructContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitDeclStruct(Context\DeclStructContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
 	public function enterFunctionDecl(Context\FunctionDeclContext $context): void {}
 
 	/**
@@ -107,19 +94,6 @@ class GolampiBaseListener implements GolampiListener
 	 * The default implementation does nothing.
 	 */
 	public function exitReturnTypes(Context\ReturnTypesContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterStructureDecl(Context\StructureDeclContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitStructureDecl(Context\StructureDeclContext $context): void {}
 	/**
 	 * {@inheritdoc}
 	 *
@@ -354,19 +328,6 @@ class GolampiBaseListener implements GolampiListener
 	 * The default implementation does nothing.
 	 */
 	public function exitStmtExpr(Context\StmtExprContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterStmtStructAssign(Context\StmtStructAssignContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitStmtStructAssign(Context\StmtStructAssignContext $context): void {}
 	/**
 	 * {@inheritdoc}
 	 *
@@ -645,19 +606,6 @@ class GolampiBaseListener implements GolampiListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterExprStructLit(Context\ExprStructLitContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitExprStructLit(Context\ExprStructLitContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
 	public function enterExprBuiltIn(Context\ExprBuiltInContext $context): void {}
 
 	/**
@@ -840,19 +788,6 @@ class GolampiBaseListener implements GolampiListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterExprStructAccess(Context\ExprStructAccessContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitExprStructAccess(Context\ExprStructAccessContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
 	public function enterExprEquality(Context\ExprEqualityContext $context): void {}
 
 	/**
@@ -926,19 +861,6 @@ class GolampiBaseListener implements GolampiListener
 	 * The default implementation does nothing.
 	 */
 	public function exitArrayLiteral(Context\ArrayLiteralContext $context): void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterStructAssignment(Context\StructAssignmentContext $context): void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitStructAssignment(Context\StructAssignmentContext $context): void {}
 
 	/**
 	 * {@inheritdoc}
